@@ -18,15 +18,23 @@ void Engine::Init()
 
 	bool texResult = tex.Generate();
 
+	auto sctexDesc = CD3D11_TEXTURE2D_DESC(DXGI_FORMAT_R8G8B8A8_UNORM, mHardware->GetWidth(), mHardware->GetHeight(), 1U, 0U, D3D11_BIND_RENDER_TARGET);
+	scTex = new SCTex2D(sctexDesc);
+
+	texResult = scTex->Generate();
+	
 
 }
 
 void Engine::Update(float Delta)
-{}
+{
+	scTex->ClearTexture(DirectX::Colors::OrangeRed);
+
+}
 
 void Engine::Render(float Delta)
 {
-
+	mSwapChain->Present(0, 0);
 
 }
 

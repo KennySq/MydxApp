@@ -2,3 +2,14 @@
 .vs/MydxApp/v16/Browse.VC.db-shm
 .vs/MydxApp/v16/Browse.VC.db-wal
 .vs/MydxApp/v16/Browse.VC.opendb
+.vs/
+x64/
+MydxApp.ico
+MydxApp.rc
+MydxApp.sln
+MydxApp.vcxproj
+MydxApp.vcxproj.filters
+MydxApp.vcxproj.user
+Resource.h
+small.ico
+targetver.h

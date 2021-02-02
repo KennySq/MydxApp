@@ -9,6 +9,9 @@ class Engine
 	Hardware* mHardware;
 	IDXGISwapChain* mSwapChain;
 
+
+	SCTex2D* scTex;
+
 public:
 	Engine(HWND hwnd, HINSTANCE hInstance);
 	~Engine();
