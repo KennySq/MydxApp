@@ -11,7 +11,7 @@ class Engine
 
 
 	SCTex2D* scTex;
-
+	
 public:
 	Engine(HWND hwnd, HINSTANCE hInstance);
 	~Engine();
