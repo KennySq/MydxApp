@@ -29,7 +29,6 @@ void Engine::Init()
 void Engine::Update(float Delta)
 {
 	scTex->ClearTexture(DirectX::Colors::OrangeRed);
-
 }
 
 void Engine::Render(float Delta)
