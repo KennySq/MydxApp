@@ -1,6 +1,8 @@
 #include"framework.h"
 #include "Engine.h"
 
+using namespace Mydx;
+
 Engine::Engine(HWND hwnd, HINSTANCE hInstance) : mHardware(HW::GetInstance(hwnd, hInstance))
 {}
 
@@ -13,30 +15,37 @@ void Engine::Init()
 {
 	mSwapChain = HW::GetSwapChain();
 
-	auto texDesc = CD3D11_TEXTURE2D_DESC(DXGI_FORMAT_R32G32B32A32_FLOAT, mHardware->GetWidth(), mHardware->GetHeight(), 1U, 0U, D3D11_BIND_RENDER_TARGET);
-	Tex2D tex(texDesc);
 
-	bool texResult = tex.Generate();
+	auto scDesc = CD3D11_TEXTURE2D_DESC(DXGI_FORMAT_R8G8B8A8_UNORM, mHardware->GetWidth(), mHardware->GetHeight(), 1U, 0U, D3D11_BIND_RENDER_TARGET);
+	auto depthDesc = CD3D11_TEXTURE2D_DESC(DXGI_FORMAT_R24G8_TYPELESS, mHardware->GetWidth(), mHardware->GetHeight(), 1U, 0U, D3D11_BIND_DEPTH_STENCIL);
 
-	auto sctexDesc = CD3D11_TEXTURE2D_DESC(DXGI_FORMAT_R8G8B8A8_UNORM, mHardware->GetWidth(), mHardware->GetHeight(), 1U, 0U, D3D11_BIND_RENDER_TARGET);
-	scTex = new SCTex2D(sctexDesc);
+	SCTex2D* scTex = new SCTex2D(scDesc);
+	Tex2D* depthTex = new Tex2D(depthDesc);
+
+	Pass p = Pass("SampleShader.hlsl", "Sample", VERTEX);
 	
-	texResult = scTex->Generate();
-	Pass p = Pass("SampleShader.hlsl", "Sample", eVertex);
-	p.Generate();
+	shared_ptr<Mesh> mesh = PrimitiveGenerator::GenerateSphere(1.0f, 32, 32);
 	
-	
+	Renderer3D& r3d = Renderer3D::GetInstance();
+	Renderer2D& r2d = Renderer2D::GetInstance();
+
+	r3d.DrawMesh(*mesh, p);
+
+	r2d.AddSwapChainTexture2D(scTex);
+	r2d.AddTexture2D(depthTex);
 	
 }
 
-void Engine::Update(float Delta)
+void Engine::Update(float delta)
 {
-	scTex->ClearTexture(DirectX::Colors::OrangeRed);
-	
+	Renderer3D& r3d = Renderer3D::GetInstance();
+	Renderer2D& r2d = Renderer2D::GetInstance();
 
+	SCTex2D* scTex = r2d.GetSwapChainTexture2D(0);
+	scTex->ClearTexture(DirectX::Colors::OrangeRed);
 }
 
-void Engine::Render(float Delta)
+void Engine::Render(float delta)
 {
 	mSwapChain->Present(0, 0);
 
