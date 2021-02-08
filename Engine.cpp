@@ -33,7 +33,16 @@ void Engine::Init()
 
 	r2d.AddSwapChainTexture2D(scTex);
 	r2d.AddTexture2D(depthTex);
+
+	Mydx::Camera c = Camera::GetMainCamera();
 	
+	Instance inst;
+	inst.AddComponent<MeshRenderer>();
+	
+	MeshRenderer* mr = inst.GetComponent<MeshRenderer>();
+	mr->SetMesh(&*mesh);
+//	mr->DrawForward(scTex, depthTex, )
+
 }
 
 void Engine::Update(float delta)
