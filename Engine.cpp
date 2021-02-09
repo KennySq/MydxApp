@@ -41,7 +41,7 @@ void Engine::Init()
 	
 	MeshRenderer* mr = inst.GetComponent<MeshRenderer>();
 	mr->SetMesh(&*mesh);
-//	mr->DrawForward(scTex, depthTex, )
+
 
 }
 
