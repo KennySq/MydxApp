@@ -8,11 +8,13 @@ class Engine
 {
 	Hardware* mHardware;
 	IDXGISwapChain* mSwapChain;
+	Scene* scene;
 	
 public:
 	Engine(HWND hwnd, HINSTANCE hInstance);
 	~Engine();
 
+	void PreInit();
 	void Init();
 	void Update(float delta);
 	void Render(float delta);

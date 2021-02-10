@@ -50,7 +50,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // 기본 메시지 루프입니다
 
     Engine engine(hWnd, hInstance);
-
+    engine.PreInit();
     engine.Init();
 
     while (msg.message != WM_QUIT)
