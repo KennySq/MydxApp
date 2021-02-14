@@ -25,27 +25,35 @@ void Engine::PreInit()
 
 	r2d.AddTexture2D(scTex);
 	r2d.AddTexture2D(depthTex);
+
+	scene->Init();
 }
 
 void Engine::Init()
 {
 	mSwapChain = HW::GetSwapChain();
 
-	Pass* p = new Pass("SampleShader.hlsl", "Sample", VERTEX, FORWARD);
+	Pass* p = new Pass("SampleShader.hlsl", "Sample", VERTEX | PIXEL, FORWARD);
 	Mesh* mesh = new Mesh(*PrimitiveGenerator::GenerateSphere(1.0f, 32, 32));
 	Camera* mainCam = scene->GetCamera();
 
 	Instance* inst = new Instance();
 	inst->AddComponent<MeshRenderer>();
-	
+	Transform* transform = inst->GetTransform();
+
+
 	scene->AddInstance(inst);
 	scene->Init();
 	
 	MeshRenderer* mr = inst->GetComponent<MeshRenderer>();
 	mr->SetMesh(&*mesh);
 	mr->SetPass(p);
+	RenderState& rs = mr->GetState();
+	
+	rs.AddResource(mainCam->GetBuffer(), VERTEX, 0);
+	rs.AddResource(transform->GetBuffer(), VERTEX, 1);
 	// Instance->GetBuffer();
-	p->AddCRegisterVertex(mainCam->GetBuffer());
+	
 
 	// Instance 버퍼도 붙여야함
 	// 렌더 방식을 바꾸는 순간 리소스 다시 바인드 해야함.
@@ -67,10 +75,14 @@ void Engine::Update(float delta)
 {
 	Renderer2D& r2d = Renderer2D::GetInstance();
 
-	Tex2D* scTex = r2d.GetTexture2D(0);
-	scTex->ClearTexture(DirectX::Colors::OrangeRed);
+	static Tex2D* scTex = r2d.GetTexture2D(0);
+	static Tex2D* scDepth = r2d.GetTexture2D(1);
+	scTex->ClearRenderTarget(DirectX::Colors::OrangeRed);
+	scDepth->ClearDepthStencil();
+
+ 	scene->Update(delta);
+	//auto context = HW::GetContext();
 	
-	scene->Update(delta);
 }
 
 void Engine::Render(float delta)

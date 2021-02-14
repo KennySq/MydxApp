@@ -69,10 +69,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             engine.Render(0);
         }
 
-        engine.Release();
 
 
     }
+    engine.Release();
 
     return (int) msg.wParam;
 }
