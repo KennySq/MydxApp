@@ -10,7 +10,12 @@ cbuffer CameraBuffer : register(b0)
 
 cbuffer Instance : register(b1)
 {
-    matrix gWorld;
+    row_major matrix gWorld;
+}
+
+cbuffer LightBuffer : register(b2)
+{
+    
 }
 
 struct VertexInput
