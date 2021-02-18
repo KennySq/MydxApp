@@ -31,9 +31,11 @@ void Engine::PreInit()
 
 void Engine::Init()
 {
+	AllocConsole();
+
 	mSwapChain = HW::GetSwapChain();
 
-	Pass* p = new Pass("SampleShader.hlsl", "Sample", VERTEX | PIXEL, FORWARD);
+	Pass* p = new Pass("C:/Users/Leopard/source/repos/Mydx/StandardForwardShader.hlsl", "Sample", VERTEX | PIXEL, FORWARD);
 	Mesh* mesh = new Mesh(*PrimitiveGenerator::GenerateSphere(1.0f, 32, 32));
 	Camera* mainCam = scene->GetCamera();
 
@@ -46,14 +48,27 @@ void Engine::Init()
 	scene->Init();
 	
 	MeshRenderer* mr = inst->GetComponent<MeshRenderer>();
+	
 	mr->SetMesh(&*mesh);
 	mr->SetPass(p);
 	RenderState& rs = mr->GetState();
-	
+
+	XMVECTOR lightDir = XMVectorSet(-1, 0, 0, 1) - XMVectorSet(0, 0, 0, 0);
+	XMFLOAT4 lightDirf4;
+
+	XMStoreFloat4(&lightDirf4, lightDir);
+
+	scene->AddDirectionalLight(new DirectionalLight(lightDirf4, Colors::White, 1.0f));
+	DirectionalLight* light = scene->GetDirectionalLight(0);
+	mainCam->Update();
 	rs.AddResource(mainCam->GetBuffer(), VERTEX, 0);
 	rs.AddResource(transform->GetBuffer(), VERTEX, 1);
+
+	rs.AddResource(mainCam->GetBuffer(), PIXEL, 0);
+	rs.AddResource(transform->GetBuffer(), PIXEL, 1);
+	rs.AddResource(light->AsBuffer(), PIXEL, 2);
 	// Instance->GetBuffer();
-	
+			
 
 	// Instance 버퍼도 붙여야함
 	// 렌더 방식을 바꾸는 순간 리소스 다시 바인드 해야함.
