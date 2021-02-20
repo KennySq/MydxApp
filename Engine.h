@@ -1,6 +1,8 @@
 #pragma once
 
 #include<Mydx.h>
+#include<filesystem>
+#include<iostream>
 
 using namespace Mydx;
 

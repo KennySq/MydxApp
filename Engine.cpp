@@ -1,8 +1,9 @@
 #include"framework.h"
 #include "Engine.h"
+#include"EnvironmentalVariables.h"
 
 using namespace Mydx;
-
+using namespace std;
 Engine::Engine(HWND hwnd, HINSTANCE hInstance) : mHardware(HW::GetInstance(hwnd, hInstance))
 {
 	scene = new Scene("Main Scene");
@@ -40,7 +41,10 @@ void Engine::Init()
 	mSwapChain = HW::GetSwapChain();
 	Renderer2D& r2d = Renderer2D::GetInstance();
 
-	Pass* p = new Pass("C:/Users/Kenny/Documents/Mydx/StandardForwardShader.hlsl", "Sample", VERTEX | PIXEL, FORWARD);
+
+	string resourcePath = MYDX_PATH;
+	resourcePath += "StandardForwardShader.hlsl";
+	Pass* p = new Pass(resourcePath.c_str(), "Sample", VERTEX | PIXEL, FORWARD);
 	Mesh* mesh = new Mesh(*PrimitiveGenerator::GenerateSphere(1.0f, 32, 32));
 	Camera* mainCam = scene->GetCamera();
 
@@ -65,14 +69,14 @@ void Engine::Init()
 
 	mr->SetMesh(&*mesh);
 	mr->SetPass(p);
-	
+
 	skyboxMr->SetMesh(&*mesh);
-	mr->SetPass(p);
+	skyboxMr->SetPass(p);
 	
 	RenderState& rs = mr->GetState();
 	RenderState& skyboxRs = skyboxMr->GetState();
 
-	XMVECTOR lightDir = XMVectorSet(1, 0, 0, 1) - XMVectorSet(0, 0, 0, 0);
+	XMVECTOR lightDir = XMVectorSet(1,1, -1, 1) - XMVectorSet(0, 0, 0, 0);
 	XMFLOAT4 lightDirf4;
 
 	XMStoreFloat4(&lightDirf4, lightDir);
@@ -87,26 +91,21 @@ void Engine::Init()
 	rs.AddResource(transform->GetBuffer(), PIXEL, 1);
 	rs.AddResource(light->AsBuffer(), PIXEL, 2);
 
+
+	skyboxRs.ChangeCullMode(D3D11_CULL_NONE);
+	skyboxRs.AddResource(mainCam->GetBuffer(), VERTEX, 0);
+	skyboxRs.AddResource(skyTransform->GetBuffer(), VERTEX, 1);
+
+	skyboxRs.AddResource(mainCam->GetBuffer(), PIXEL, 0);
+	skyboxRs.AddResource(skyTransform->GetBuffer(), PIXEL, 1);
+
+	transform->SetScale(1.5, 1.5, 1.5);
+	skyTransform->SetScale(1000, 1000, 1000);
 	Tex2D* cubeTex = r2d.GetTexture2D(2);
 
+	skyboxRs.AddResource(cubeTex->GetShaderResource(), PIXEL, 0);
 	rs.AddResource(cubeTex->GetShaderResource(), PIXEL, 0);
 	// Instance->GetBuffer();
-			
-
-	// Instance 버퍼도 붙여야함
-	// 렌더 방식을 바꾸는 순간 리소스 다시 바인드 해야함.
-	// 우버는 아니어도 최소한의 렌더 상태를 유지할 패스가 필요함.
-
-	// Attempt 1. 렌더 큐에 넣는 방식을 사용하자.
-	// 1. 렌더할 인스턴스를 렌더큐에 넣는다.
-	// 2. 큐에서 빠지는 인스턴스마다 버퍼를 가져옴
-	// 3. 해당 큐에서 사용하는 카메라 버퍼를 뽑아온 인스턴스 버퍼와 함께 파이프라인에 바인드
-	// Problems
-	//  - Deferred, Forward에 대한 다른 렌더 큐 구조가 필요하다.
-	//  - 그래서 렌더는 누가할래
-	//     - 씬이 해보는건 어떨까
-	//     - 씬에 렌더큐 배치
-
 }
 
 void Engine::Update(float delta)
