@@ -36,7 +36,6 @@ void Engine::PreInit()
 
 void Engine::Init()
 {
-	AllocConsole();
 
 	mSwapChain = HW::GetSwapChain();
 	Renderer2D& r2d = Renderer2D::GetInstance();
@@ -44,7 +43,19 @@ void Engine::Init()
 
 	string resourcePath = MYDX_PATH;
 	resourcePath += "StandardForwardShader.hlsl";
+
+	string skyboxPath = MYDX_PATH;
+	skyboxPath += "SkyboxShader.hlsl";
+
+	string audiPath = APP_PATH;
+	audiPath += "resources/audir8.obj";
+
+	MeshLoader loader(audiPath.c_str());
+	Mesh* objMesh = loader.GetMesh();
+
 	Pass* p = new Pass(resourcePath.c_str(), "Sample", VERTEX | PIXEL, FORWARD);
+	Pass* skyboxPass = new Pass(skyboxPath.c_str(), "Sky", VERTEX | PIXEL, FORWARD);
+
 	Mesh* mesh = new Mesh(*PrimitiveGenerator::GenerateSphere(1.0f, 32, 32));
 	Camera* mainCam = scene->GetCamera();
 
@@ -71,7 +82,7 @@ void Engine::Init()
 	mr->SetPass(p);
 
 	skyboxMr->SetMesh(&*mesh);
-	skyboxMr->SetPass(p);
+	skyboxMr->SetPass(skyboxPass);
 	
 	RenderState& rs = mr->GetState();
 	RenderState& skyboxRs = skyboxMr->GetState();
@@ -116,6 +127,10 @@ void Engine::Update(float delta)
 	static Tex2D* scDepth = r2d.GetTexture2D(1);
 	scTex->ClearRenderTarget(DirectX::Colors::OrangeRed);
 	scDepth->ClearDepthStencil();
+
+	static DirectionalLight* light = scene->GetDirectionalLight(0);
+
+	
 
  	scene->Update(delta);
 	//auto context = HW::GetContext();
