@@ -47,6 +47,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg = MSG();
 
+
     // 기본 메시지 루프입니다
 
     Engine engine(hWnd, hInstance);
@@ -118,7 +119,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
-
    hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, 800,600, 0, nullptr, nullptr, hInstance, nullptr);
 
@@ -126,6 +126,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
+   AllocConsole();
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);

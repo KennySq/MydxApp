@@ -13,3 +13,6 @@ MydxApp.vcxproj.user
 Resource.h
 small.ico
 targetver.h
+EnvironmentalVariables.h
+resources/audir8.obj
+resources/audir8.mtl
